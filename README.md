@@ -1,11 +1,11 @@
 # subnetctl — IPv4 Subnet Calculator
 
-A small web tool that takes an IPv4 address and a CIDR prefix length and
+A small web tool created with the help of Claude Code that takes an IPv4 address and a CIDR prefix length and
 returns the subnet breakdown: network address, broadcast address,
 subnet/wildcard masks, and usable host range.
 
 Built as the bonus stage of a DevOps technical assessment, to demonstrate
-a working CI/CD pipeline end to end — not just a sample workflow file.
+a working CI/CD pipeline end-to-end — not just a sample workflow file.
 
 **Live site:** _add your deployed URL here after enabling GitHub Pages_
 **Repo:** _add your GitHub repository URL here_
@@ -13,7 +13,7 @@ a working CI/CD pipeline end to end — not just a sample workflow file.
 ## Why this project
 
 Subnetting is core to the networking side of IT/cybersecurity work, so
-this doubles as a useful reference tool and a real (if small) app to
+This doubles as a useful reference tool and a real (if small) app to
 wire a pipeline around — plain JS logic that's easy to unit test, a
 build step, and a deploy step, same shape as a much bigger project.
 
