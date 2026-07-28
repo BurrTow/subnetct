@@ -1,10 +1,8 @@
 # subnetctl — IPv4 Subnet Calculator
 
-A small, terminal-styled web tool that takes an IPv4 address and a CIDR
-prefix length and returns the full subnet breakdown: network address,
-broadcast address, subnet/wildcard masks, usable host range, and a
-bit-level map showing exactly where the mask splits network bits from
-host bits.
+A small web tool that takes an IPv4 address and a CIDR prefix length and
+returns the subnet breakdown: network address, broadcast address,
+subnet/wildcard masks, and usable host range.
 
 Built as the bonus stage of a DevOps technical assessment, to demonstrate
 a working CI/CD pipeline end to end — not just a sample workflow file.
@@ -70,10 +68,10 @@ After pushing this project to a public repository:
 ```
 ├── src/
 │   ├── subnet.js           # pure subnet math (parseIp, calculateSubnet, ...)
-│   ├── main.js              # DOM wiring / UI
+│   ├── main.js             # DOM wiring / UI
 │   ├── style.css
 │   └── __tests__/
-│       └── subnet.test.js   # unit tests for subnet.js
+│       └── subnet.test.js  # unit tests for subnet.js
 ├── index.html
 ├── vite.config.js
 ├── eslint.config.js

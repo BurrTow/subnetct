@@ -67,10 +67,5 @@ export function calculateSubnet(ipStr, cidrStr) {
     lastHost: intToIp(lastHostInt),
     totalHosts,
     usableHosts,
-    // per-octet binary strings, used by the UI to render the bit map
-    binaryOctets: octets.map((o) => o.toString(2).padStart(8, '0')),
-    maskBinaryOctets: intToIp(mask)
-      .split('.')
-      .map((o) => Number(o).toString(2).padStart(8, '0')),
   };
 }

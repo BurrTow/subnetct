@@ -4,14 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>subnetctl — IPv4 subnet calculator</title>
-    <meta name="description" content="A terminal-styled IPv4 subnet calculator: enter an address and prefix length, see the network, broadcast, host range, and a live bit map of the mask." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
 
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <h1>subnetctl</h1>
+      <p>Enter an IPv4 address and a CIDR prefix length to get the subnet breakdown.</p>
+
+      <div class="input-row">
+        <label>
+          IPv4 address
+          <input id="ip" type="text" autocomplete="off" value="192.168.1.10" />
+        </label>
+        <label>
+          Prefix (/)
+          <input id="cidr" type="text" autocomplete="off" value="24" />
+        </label>
+      </div>
+
+      <p id="error" class="error"></p>
+
+      <table>
+        <tbody id="results"></tbody>
+      </table>
+
+      <footer>built and deployed by GitHub Actions</footer>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
