@@ -1,6 +1,6 @@
 # subnetctl — IPv4 Subnet Calculator
 
-A small web tool created with the help of Claude Code that takes an IPv4 address and a CIDR prefix length and
+A small web tool created with the help of Claude Code for the soul purpose of the bonus stage for the DevOps position. It that takes an IPv4 address and a CIDR prefix length and
 returns the subnet breakdown: network address, broadcast address,
 subnet/wildcard masks, and usable host range.
 
