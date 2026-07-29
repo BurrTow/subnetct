@@ -7,8 +7,7 @@ subnet/wildcard masks, and usable host range.
 Built as the bonus stage of a DevOps technical assessment, to demonstrate
 a working CI/CD pipeline end-to-end — not just a sample workflow file.
 
-**Live site:** _add your deployed URL here after enabling GitHub Pages_
-**Repo:** _add your GitHub repository URL here_
+**Live site:** https://burrtow.github.io/subnetct/
 
 ## Why this project
 
