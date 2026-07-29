@@ -1,6 +1,6 @@
 # subnetctl — IPv4 Subnet Calculator
 
-A small web tool created with the help of Claude Code for the soul purpose of the bonus stage for the DevOps position. It that takes an IPv4 address and a CIDR prefix length and
+A small web tool created with the help of Claude Code for the sole purpose of the bonus stage for the DevOps position. It takes an IPv4 address and a CIDR prefix length and
 returns the subnet breakdown: network address, broadcast address,
 subnet/wildcard masks, and usable host range.
 
@@ -15,7 +15,7 @@ a working CI/CD pipeline end-to-end — not just a sample workflow file.
 Subnetting is core to the networking side of IT/cybersecurity work, so
 This doubles as a useful reference tool and a real (if small) app to
 wire a pipeline around — plain JS logic that's easy to unit test, a
-build step, and a deploy step, same shape as a much bigger project.
+A build step and a deploy step, with the same shape as a much bigger project.
 
 ## Stack
 
@@ -52,7 +52,7 @@ against `main`:
    `actions/deploy-pages`.
 
 Pull requests run steps 1–5 (build validation) but skip deployment, so
-broken code never reaches the live site.
+Broken code never reaches the live site.
 
 ## Enabling GitHub Pages for this repo
 
