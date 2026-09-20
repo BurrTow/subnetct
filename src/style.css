@@ -231,11 +231,58 @@ h2 {
   transition: opacity var(--t-med), filter var(--t-med), border-color var(--t-med);
 }
 
+/* ── Mode toggle ────────────────────────────────────────────────────────── */
+.seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+}
+
+.seg__btn {
+  padding: 5px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color var(--t-fast), background-color var(--t-fast);
+}
+
+.seg__btn:hover {
+  color: var(--text);
+}
+
+.seg__btn.is-active {
+  font-weight: 700;
+  color: #06121b;
+  background: linear-gradient(120deg, var(--cyan), var(--blue));
+}
+
+.seg__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
 /* ── Fields ─────────────────────────────────────────────────────────────── */
 .fields {
   display: grid;
   grid-template-columns: 1fr 160px;
   gap: var(--sp-4);
+}
+
+/* .fields sets display:grid, so [hidden] needs an explicit author rule here. */
+.fields[hidden] {
+  display: none;
+}
+
+.fields--single {
+  grid-template-columns: 1fr;
 }
 
 .field__label {

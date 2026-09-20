@@ -4,6 +4,10 @@ A small web tool created with the help of Claude Code for the sole purpose of th
 returns the subnet breakdown: network address, broadcast address,
 subnet/wildcard masks, and usable host range.
 
+It also has an IPv6 mode: enter an address and prefix in the usual
+`2001:db8::/32` form and it returns the expanded and compressed forms, the
+network (prefix) address, the address type, and the size of the block.
+
 Built as the bonus stage of a DevOps technical assessment, to demonstrate
 a working CI/CD pipeline end-to-end — not just a sample workflow file.
 
@@ -67,11 +71,13 @@ After pushing this project to a public repository:
 
 ```
 ├── src/
-│   ├── subnet.js           # pure subnet math (parseIp, calculateSubnet, ...)
-│   ├── main.js             # DOM wiring / UI
+│   ├── subnet.js            # pure IPv4 math (parseIp, calculateSubnet, ...)
+│   ├── subnet6.js           # pure IPv6 math (parseIp6, calculateSubnet6, ...)
+│   ├── main.js              # DOM wiring / UI
 │   ├── style.css
 │   └── __tests__/
-│       └── subnet.test.js  # unit tests for subnet.js
+│       ├── subnet.test.js   # unit tests for subnet.js
+│       └── subnet6.test.js  # unit tests for subnet6.js
 ├── index.html
 ├── vite.config.js
 ├── eslint.config.js

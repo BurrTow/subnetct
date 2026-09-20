@@ -54,10 +54,17 @@
       <section class="card card--query">
         <div class="card__head">
           <h2 class="card__title">Query</h2>
-          <span class="card__hint">live</span>
+          <div class="seg" role="group" aria-label="Address family">
+            <button type="button" class="seg__btn is-active" data-mode="v4" aria-pressed="true">
+              IPv4
+            </button>
+            <button type="button" class="seg__btn" data-mode="v6" aria-pressed="false">
+              IPv6
+            </button>
+          </div>
         </div>
 
-        <div class="fields">
+        <div class="fields" data-fields="v4">
           <div class="field">
             <label class="field__label" for="ip">IPv4 address</label>
             <div class="field__control">
@@ -89,6 +96,24 @@
                 spellcheck="false"
                 placeholder="24"
                 maxlength="2"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="fields fields--single" data-fields="v6" hidden>
+          <div class="field">
+            <label class="field__label" for="ip6">IPv6 address / prefix</label>
+            <div class="field__control">
+              <span class="field__glow" aria-hidden="true"></span>
+              <input
+                id="ip6"
+                class="field__input mono"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder="2001:db8::/32"
               />
             </div>
           </div>
