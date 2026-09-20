@@ -20,6 +20,7 @@ A build step and a deploy step, with the same shape as a much bigger project.
 
 - Vanilla JavaScript + [Vite](https://vitejs.dev/) (no framework needed
   for something this small)
+- [anime.js](https://animejs.com/) for the result transitions and count-ups
 - [Vitest](https://vitest.dev/) for unit tests on the subnet math
 - [ESLint](https://eslint.org/) for linting
 - GitHub Actions for CI/CD

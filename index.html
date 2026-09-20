@@ -3,32 +3,113 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="subnetctl — a fast IPv4 subnet calculator. Enter an address and a CIDR prefix length for the network address, broadcast address, masks and usable host range."
+    />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <title>subnetctl — IPv4 subnet calculator</title>
   </head>
 
   <body>
     <div id="app">
-      <h1>subnetctl</h1>
-      <p>Enter an IPv4 address and a CIDR prefix length to get the subnet breakdown.</p>
+      <header class="masthead">
+        <div class="brand">
+          <svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true">
+            <defs>
+              <linearGradient id="brandNet" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#22d3ee" />
+                <stop offset="1" stop-color="#3b82f6" />
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="14" fill="#0d131c" />
+            <path
+              d="M32 23v9M16 32h32M16 32v9M32 32v9M48 32v9"
+              fill="none"
+              stroke="url(#brandNet)"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              opacity=".9"
+            />
+            <circle cx="32" cy="17" r="6" fill="url(#brandNet)" />
+            <circle cx="16" cy="47" r="5.5" fill="#22d3ee" />
+            <circle cx="32" cy="47" r="5.5" fill="#4ade80" />
+            <circle cx="48" cy="47" r="5.5" fill="#3b82f6" />
+          </svg>
+          <div class="brand__text">
+            <h1 class="brand__name">subnetctl</h1>
+            <p class="brand__tag">IPv4 subnet breakdown, as you type</p>
+          </div>
+        </div>
+      </header>
 
-      <div class="input-row">
-        <label>
-          IPv4 address
-          <input id="ip" type="text" autocomplete="off" value="192.168.1.10" />
-        </label>
-        <label>
-          Prefix (/)
-          <input id="cidr" type="text" autocomplete="off" value="24" />
-        </label>
-      </div>
+      <section class="card card--query">
+        <div class="card__head">
+          <h2 class="card__title">Query</h2>
+          <span class="card__hint">live</span>
+        </div>
 
-      <p id="error" class="error"></p>
+        <div class="fields">
+          <div class="field">
+            <label class="field__label" for="ip">IPv4 address</label>
+            <div class="field__control">
+              <span class="field__glow" aria-hidden="true"></span>
+              <input
+                id="ip"
+                class="field__input mono"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder="192.168.1.10"
+              />
+            </div>
+          </div>
 
-      <table>
-        <tbody id="results"></tbody>
-      </table>
+          <div class="field field--cidr">
+            <label class="field__label" for="cidr">Prefix length</label>
+            <div class="field__control">
+              <span class="field__glow" aria-hidden="true"></span>
+              <span class="field__slash mono" aria-hidden="true">/</span>
+              <input
+                id="cidr"
+                class="field__input mono"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="24"
+                maxlength="2"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <footer>built and deployed by GitHub Actions</footer>
+      <p id="error" class="banner" role="alert" hidden></p>
+
+      <section class="card card--results" id="results-card">
+        <span class="card__flash" aria-hidden="true"></span>
+        <div class="card__head">
+          <h2 class="card__title">Breakdown</h2>
+          <div class="card__meta">
+            <span id="stale-tag" class="tag" hidden>last valid result</span>
+            <code id="summary" class="summary mono"></code>
+          </div>
+        </div>
+        <div id="results" class="results" aria-live="polite"></div>
+      </section>
+
+      <footer class="foot">built, tested and deployed by GitHub Actions</footer>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>
