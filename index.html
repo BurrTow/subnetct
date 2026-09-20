@@ -52,19 +52,40 @@
       </header>
 
       <section class="card card--query">
-        <div class="card__head">
-          <h2 class="card__title">Query</h2>
-          <div class="seg" role="group" aria-label="Address family">
-            <button type="button" class="seg__btn is-active" data-mode="v4" aria-pressed="true">
-              IPv4
-            </button>
-            <button type="button" class="seg__btn" data-mode="v6" aria-pressed="false">
-              IPv6
-            </button>
-          </div>
+        <div class="tabs" role="tablist" aria-label="Address family">
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            id="tab-v4"
+            data-mode="v4"
+            aria-selected="true"
+            aria-controls="panel-v4"
+            tabindex="0"
+          >
+            IPv4
+          </button>
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            id="tab-v6"
+            data-mode="v6"
+            aria-selected="false"
+            aria-controls="panel-v6"
+            tabindex="-1"
+          >
+            IPv6
+          </button>
         </div>
 
-        <div class="fields" data-fields="v4">
+        <div
+          class="fields"
+          data-fields="v4"
+          id="panel-v4"
+          role="tabpanel"
+          aria-labelledby="tab-v4"
+        >
           <div class="field">
             <label class="field__label" for="ip">IPv4 address</label>
             <div class="field__control">
@@ -101,7 +122,14 @@
           </div>
         </div>
 
-        <div class="fields fields--single" data-fields="v6" hidden>
+        <div
+          class="fields fields--single"
+          data-fields="v6"
+          id="panel-v6"
+          role="tabpanel"
+          aria-labelledby="tab-v6"
+          hidden
+        >
           <div class="field">
             <label class="field__label" for="ip6">IPv6 address / prefix</label>
             <div class="field__control">

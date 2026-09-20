@@ -17,8 +17,8 @@ const resultsCard = document.querySelector('#results-card');
 const flashEl = resultsCard.querySelector('.card__flash');
 const staleTag = document.querySelector('#stale-tag');
 const summaryEl = document.querySelector('#summary');
-const segEl = document.querySelector('.seg');
-const segButtons = document.querySelectorAll('.seg__btn');
+const tablistEl = document.querySelector('.tabs');
+const tabButtons = [...document.querySelectorAll('.tab')];
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -238,7 +238,7 @@ function countUp(el, from, to) {
   });
 }
 
-function renderResults(config, result, previous) {
+function renderResults(config, result, previous, { flash = true } = {}) {
   const visible = config.fields.filter((field) => !field.when || field.when(result));
 
   const fragment = document.createDocumentFragment();
@@ -269,11 +269,13 @@ function renderResults(config, result, previous) {
     countUp(resultsEl.querySelector(`[data-cell="${field.id}"]`), from, to);
   }
 
-  animate(flashEl, {
-    opacity: [0, 0.55, 0],
-    duration: 420,
-    ease: 'outQuad',
-  });
+  if (flash) {
+    animate(flashEl, {
+      opacity: [0, 0.55, 0],
+      duration: 420,
+      ease: 'outQuad',
+    });
+  }
 }
 
 /* ── Error state ────────────────────────────────────────────────────────── */
@@ -327,37 +329,58 @@ function update() {
 
 /* ── Mode switching ─────────────────────────────────────────────────────── */
 
-function setMode(next, { animateSwap = true } = {}) {
+function setMode(next, { animateSwap = true, focusTab = false } = {}) {
   if (!MODES[next]) return;
+  const previousMode = mode;
   const changed = next !== mode;
   mode = next;
 
-  for (const button of segButtons) {
+  // Roving tabindex: only the selected tab is in the tab order.
+  for (const button of tabButtons) {
     const active = button.dataset.mode === mode;
-    button.classList.toggle('is-active', active);
-    button.setAttribute('aria-pressed', String(active));
+    button.setAttribute('aria-selected', String(active));
+    button.tabIndex = active ? 0 : -1;
+    if (active && focusTab) button.focus();
   }
   for (const [key, config] of Object.entries(MODES)) {
     config.fieldsEl.hidden = key !== mode;
   }
 
   // The results panel is shared, so re-render it from the newly active mode.
-  // If that mode has nothing valid to show, clear it rather than leaving the
-  // other family's results sitting there under an error banner.
-  if (!update() && !lastValid[mode]) {
-    resultsEl.replaceChildren();
-    summaryEl.textContent = '';
+  // Each mode keeps its own inputs and its own lastValid entry, so switching
+  // away and back restores what was there — including when the current input
+  // is mid-edit and invalid, in which case that mode's last good result is
+  // restored under the error banner. The other family's results are never
+  // left on screen.
+  if (!update()) {
+    if (lastValid[mode]) {
+      renderResults(MODES[mode], lastValid[mode], null, { flash: false });
+    } else {
+      resultsEl.replaceChildren();
+      summaryEl.textContent = '';
+    }
   }
 
   if (changed && animateSwap && !reduceMotion) {
+    // Slide in from the side the newly selected tab sits on.
+    const direction = tabIndexOf(mode) > tabIndexOf(previousMode) ? 1 : -1;
     animate(MODES[mode].fieldsEl, {
       opacity: [0, 1],
-      translateY: [8, 0],
+      translateX: [14 * direction, 0],
+      duration: 260,
+      ease: 'outQuad',
+    });
+    animate(resultsCard, {
+      opacity: [0.55, 1],
       duration: 240,
       ease: 'outQuad',
     });
   }
   saveState();
+}
+
+function tabIndexOf(modeKey) {
+  return tabButtons.findIndex((button) => button.dataset.mode === modeKey);
 }
 
 /* ── Events ─────────────────────────────────────────────────────────────── */
@@ -381,10 +404,30 @@ for (const input of [ipInput, cidrInput, ip6Input]) {
 }
 
 // Delegated, matching the results panel's pattern.
-segEl.addEventListener('click', (event) => {
-  const button = event.target.closest('.seg__btn');
+tablistEl.addEventListener('click', (event) => {
+  const button = event.target.closest('.tab');
   if (!button) return;
   setMode(button.dataset.mode);
+});
+
+// Arrow / Home / End move between tabs and select as they go.
+const TAB_STEPS = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+
+tablistEl.addEventListener('keydown', (event) => {
+  let target;
+  if (event.key in TAB_STEPS) {
+    const from = tabIndexOf(mode);
+    const next = (from + TAB_STEPS[event.key] + tabButtons.length) % tabButtons.length;
+    target = tabButtons[next];
+  } else if (event.key === 'Home') {
+    target = tabButtons[0];
+  } else if (event.key === 'End') {
+    target = tabButtons[tabButtons.length - 1];
+  }
+  if (!target) return;
+
+  event.preventDefault();
+  setMode(target.dataset.mode, { focusTab: true });
 });
 
 /* Delegated on the stable #results container: cells are replaced on every

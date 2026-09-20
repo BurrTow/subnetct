@@ -231,41 +231,56 @@ h2 {
   transition: opacity var(--t-med), filter var(--t-med), border-color var(--t-med);
 }
 
-/* ── Mode toggle ────────────────────────────────────────────────────────── */
-.seg {
-  display: inline-flex;
-  gap: 2px;
-  padding: 3px;
-  background: var(--bg);
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
+/* ── Tabs ──────────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--border);
 }
 
-.seg__btn {
-  padding: 5px 16px;
+.tab {
+  position: relative;
+  padding: var(--sp-3) var(--sp-4);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--text-dim);
+  letter-spacing: 0.02em;
+  color: var(--text-mute);
   background: transparent;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
   cursor: pointer;
   transition: color var(--t-fast), background-color var(--t-fast);
 }
 
-.seg__btn:hover {
+.tab:hover {
   color: var(--text);
+  background: rgb(255 255 255 / 3%);
 }
 
-.seg__btn.is-active {
+.tab[aria-selected='true'] {
   font-weight: 700;
-  color: #06121b;
-  background: linear-gradient(120deg, var(--cyan), var(--blue));
+  color: var(--cyan);
+  background: linear-gradient(180deg, transparent, rgb(34 211 238 / 8%));
 }
 
-.seg__btn:focus-visible {
+/* Accent underline sits on top of the tab bar's own border. */
+.tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  right: var(--sp-3);
+  bottom: -1px;
+  left: var(--sp-3);
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(90deg, var(--cyan), var(--blue));
+  box-shadow: 0 0 12px rgb(34 211 238 / 50%);
+}
+
+.tab:focus-visible {
   outline: none;
+  color: var(--text);
   box-shadow: var(--ring);
 }
 
