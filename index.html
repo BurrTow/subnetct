@@ -148,6 +148,71 @@
         </div>
       </section>
 
+      <section class="card card--reference">
+        <h2 class="ref__heading">
+          <button
+            type="button"
+            class="ref__toggle"
+            id="ref-toggle"
+            aria-expanded="false"
+            aria-controls="ref-panel"
+          >
+            <svg class="ref__chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="m6 9 6 6 6-6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span class="ref__label">Reference</span>
+            <span class="ref__family" id="ref-family">IPv4</span>
+          </button>
+        </h2>
+
+        <div class="ref__panel" id="ref-panel" hidden>
+          <div class="ref__body" data-ref="v4">
+            <table class="ref__table">
+              <thead>
+                <tr>
+                  <th scope="col">Prefix</th>
+                  <th scope="col">Subnet mask</th>
+                  <th scope="col">Usable hosts</th>
+                </tr>
+              </thead>
+              <tbody id="ref-v4-rows"></tbody>
+            </table>
+          </div>
+
+          <div class="ref__body" data-ref="v6" hidden>
+            <dl class="ref__list">
+              <div class="ref__row">
+                <dt class="mono">/64</dt>
+                <dd>One LAN segment — the standard subnet size. SLAAC requires it.</dd>
+              </div>
+              <div class="ref__row">
+                <dt class="mono">/56</dt>
+                <dd>Typical home site allocation — 256 &times; /64.</dd>
+              </div>
+              <div class="ref__row">
+                <dt class="mono">/48</dt>
+                <dd>Typical site or ISP allocation — 65,536 &times; /64.</dd>
+              </div>
+              <div class="ref__row">
+                <dt class="mono">/128</dt>
+                <dd>A single host — loopback, host routes.</dd>
+              </div>
+            </dl>
+            <p class="ref__note">
+              <code class="mono">::</code> replaces one run of all-zero groups, once per
+              address; leading zeros in a group are always optional.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <p id="error" class="banner" role="alert" hidden></p>
 
       <section class="card card--results" id="results-card">

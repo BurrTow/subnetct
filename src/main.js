@@ -19,6 +19,14 @@ const staleTag = document.querySelector('#stale-tag');
 const summaryEl = document.querySelector('#summary');
 const tablistEl = document.querySelector('.tabs');
 const tabButtons = [...document.querySelectorAll('.tab')];
+const refToggle = document.querySelector('#ref-toggle');
+const refPanel = document.querySelector('#ref-panel');
+const refFamily = document.querySelector('#ref-family');
+const refBodies = [...document.querySelectorAll('.ref__body')];
+const refRows = document.querySelector('#ref-v4-rows');
+
+/** Prefixes shown in the IPv4 quick-reference table. */
+const REF_PREFIXES = [8, 16, 24, 25, 26, 27, 28, 29, 30];
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -40,6 +48,7 @@ const FIELDS_V4 = [
   {
     id: 'network',
     label: 'Network address',
+    hint: 'Identifies the subnet itself — the first address in the block.',
     tier: 'primary',
     accent: 'cyan',
     value: (r) => r.network,
@@ -47,6 +56,7 @@ const FIELDS_V4 = [
   {
     id: 'broadcast',
     label: 'Broadcast address',
+    hint: 'Last address in the block; reaches every host on the subnet.',
     tier: 'primary',
     accent: 'blue',
     value: (r) => r.broadcast,
@@ -54,22 +64,27 @@ const FIELDS_V4 = [
   {
     id: 'range',
     label: 'Usable host range',
+    hint: 'Assignable addresses — the block minus its network and broadcast addresses.',
     tier: 'primary',
     accent: 'green',
     wide: true,
     value: (r) => (r.usableHosts === 0 ? 'none' : `${r.firstHost} – ${r.lastHost}`),
   },
-  { id: 'subnetMask', label: 'Subnet mask', value: (r) => r.subnetMask },
-  { id: 'wildcardMask', label: 'Wildcard mask', value: (r) => r.wildcardMask },
+  { id: 'subnetMask', label: 'Subnet mask',
+    hint: 'Marks which leading bits are the network; the rest address hosts.', value: (r) => r.subnetMask },
+  { id: 'wildcardMask', label: 'Wildcard mask',
+    hint: 'Inverse of the subnet mask — the form ACLs and OSPF expect.', value: (r) => r.wildcardMask },
   {
     id: 'usableHosts',
     label: 'Usable hosts',
+    hint: '2^host bits minus 2, except /31 and /32, which have none.',
     value: (r) => r.usableHosts,
     count: (r) => r.usableHosts,
   },
   {
     id: 'totalHosts',
     label: 'Total addresses',
+    hint: '2^host bits, counting the network and broadcast addresses.',
     value: (r) => r.totalHosts,
     count: (r) => r.totalHosts,
   },
@@ -81,6 +96,7 @@ const FIELDS_V6 = [
   {
     id: 'network',
     label: 'Network (prefix) address',
+    hint: 'The address with every host bit set to zero.',
     tier: 'primary',
     accent: 'cyan',
     value: (r) => r.network,
@@ -88,6 +104,7 @@ const FIELDS_V6 = [
   {
     id: 'type',
     label: 'Address type',
+    hint: 'Which reserved range the address falls inside.',
     tier: 'primary',
     accent: 'blue',
     value: (r) => r.addressType,
@@ -95,17 +112,22 @@ const FIELDS_V6 = [
   {
     id: 'expanded',
     label: 'Full expanded form',
+    hint: 'All 8 groups, each padded to 4 hex digits.',
     tier: 'primary',
     accent: 'green',
     wide: true,
     value: (r) => r.expanded,
   },
-  { id: 'compressed', label: 'Compressed form', value: (r) => r.address },
-  { id: 'lastAddress', label: 'Last address in block', value: (r) => r.lastAddress },
-  { id: 'hostBits', label: 'Host bits', value: (r) => r.hostBits, count: (r) => r.hostBits },
+  { id: 'compressed', label: 'Compressed form',
+    hint: 'RFC 5952: leading zeros dropped, longest zero run written as ::.', value: (r) => r.address },
+  { id: 'lastAddress', label: 'Last address in block',
+    hint: 'Highest address in the prefix — IPv6 has no broadcast address.', value: (r) => r.lastAddress },
+  { id: 'hostBits', label: 'Host bits',
+    hint: '128 minus the prefix length.', value: (r) => r.hostBits, count: (r) => r.hostBits },
   {
     id: 'totalAddresses',
     label: 'Total addresses',
+    hint: '2^host bits — IPv6 reserves none of them the way IPv4 does.',
     wide: true,
     // BigInt — far past Number.MAX_SAFE_INTEGER, so no count-up here.
     value: (r) => (r.hostBits === 0 ? '1' : `2^${r.hostBits} (${r.totalAddresses.toLocaleString()})`),
@@ -114,12 +136,14 @@ const FIELDS_V6 = [
   {
     id: 'interfaceId',
     label: 'Interface ID',
+    hint: 'The low 64 bits, identifying one interface within a /64.',
     when: (r) => r.interfaceId !== null,
     value: (r) => r.interfaceId,
   },
   {
     id: 'embeddedIpv4',
     label: 'Embedded IPv4',
+    hint: 'The IPv4 address carried in the low 32 bits.',
     when: (r) => r.embeddedIpv4 !== null,
     value: (r) => r.embeddedIpv4,
   },
@@ -156,6 +180,8 @@ const MODES = {
 };
 
 let mode = 'v4';
+/** Reference panel starts collapsed on every load, then survives tab switches. */
+let refOpen = false;
 /** Last successful result per mode, so invalid keystrokes can leave the
     rendered breakdown on screen instead of wiping it. */
 const lastValid = { v4: null, v6: null };
@@ -198,6 +224,17 @@ function buildCell(field, result) {
   const label = document.createElement('div');
   label.className = 'cell__label';
   label.textContent = field.label;
+
+  if (field.hint) {
+    // Pure CSS hover/focus tooltip, so replaced cells need no listeners.
+    const tip = document.createElement('button');
+    tip.type = 'button';
+    tip.className = 'tip';
+    tip.dataset.tip = field.hint;
+    tip.textContent = '?';
+    tip.setAttribute('aria-label', `${field.label}: ${field.hint}`);
+    label.append(tip);
+  }
 
   const raw = field.value(result);
   const display = typeof raw === 'number' ? raw.toLocaleString() : String(raw);
@@ -278,6 +315,97 @@ function renderResults(config, result, previous, { flash = true } = {}) {
   }
 }
 
+/* ── Reference panel ────────────────────────────────────────────────────── */
+
+/** Built from calculateSubnet so the table can't drift from the calculator. */
+function buildReferenceTable() {
+  const fragment = document.createDocumentFragment();
+  for (const prefix of REF_PREFIXES) {
+    const result = calculateSubnet('0.0.0.0', String(prefix));
+    const row = document.createElement('tr');
+
+    const prefixCell = document.createElement('th');
+    prefixCell.scope = 'row';
+    prefixCell.textContent = `/${prefix}`;
+
+    const maskCell = document.createElement('td');
+    maskCell.textContent = result.subnetMask;
+
+    const hostsCell = document.createElement('td');
+    hostsCell.textContent = result.usableHosts.toLocaleString();
+
+    row.append(prefixCell, maskCell, hostsCell);
+    fragment.append(row);
+  }
+  refRows.replaceChildren(fragment);
+}
+
+/** Swap the reference body to match the active tab, keeping it open if it is. */
+function syncReference({ animateChange = true } = {}) {
+  const before = refPanel.offsetHeight;
+
+  for (const body of refBodies) body.hidden = body.dataset.ref !== mode;
+  refFamily.textContent = mode === 'v6' ? 'IPv6' : 'IPv4';
+
+  if (!refOpen) return;
+
+  refPanel.style.height = 'auto';
+  if (!animateChange || reduceMotion) return;
+
+  const after = refPanel.scrollHeight;
+  if (before === after) return;
+  animate(refPanel, {
+    height: [`${before}px`, `${after}px`],
+    duration: 240,
+    ease: 'outQuad',
+    onComplete: () => {
+      refPanel.style.height = 'auto';
+    },
+  });
+}
+
+function setReferenceOpen(open, { animateChange = true } = {}) {
+  refOpen = open;
+  refToggle.setAttribute('aria-expanded', String(open));
+
+  if (open) {
+    refPanel.hidden = false;
+    refPanel.style.height = 'auto';
+    if (!animateChange || reduceMotion) return;
+
+    const target = refPanel.scrollHeight;
+    animate(refPanel, {
+      height: ['0px', `${target}px`],
+      opacity: [0, 1],
+      duration: 280,
+      ease: 'outQuad',
+      onComplete: () => {
+        refPanel.style.height = 'auto';
+      },
+    });
+    return;
+  }
+
+  if (!animateChange || reduceMotion) {
+    refPanel.hidden = true;
+    refPanel.style.height = '';
+    return;
+  }
+
+  const from = refPanel.scrollHeight;
+  animate(refPanel, {
+    height: [`${from}px`, '0px'],
+    opacity: [1, 0],
+    duration: 220,
+    ease: 'outQuad',
+    onComplete: () => {
+      refPanel.hidden = true;
+      refPanel.style.height = '';
+      refPanel.style.opacity = '';
+    },
+  });
+}
+
 /* ── Error state ────────────────────────────────────────────────────────── */
 
 function showError(message) {
@@ -345,6 +473,9 @@ function setMode(next, { animateSwap = true, focusTab = false } = {}) {
   for (const [key, config] of Object.entries(MODES)) {
     config.fieldsEl.hidden = key !== mode;
   }
+  // The panel keeps its open/closed state across tab switches; only the
+  // content inside it changes.
+  syncReference({ animateChange: changed && animateSwap });
 
   // The results panel is shared, so re-render it from the newly active mode.
   // Each mode keeps its own inputs and its own lastValid entry, so switching
@@ -430,6 +561,8 @@ tablistEl.addEventListener('keydown', (event) => {
   setMode(target.dataset.mode, { focusTab: true });
 });
 
+refToggle.addEventListener('click', () => setReferenceOpen(!refOpen));
+
 /* Delegated on the stable #results container: cells are replaced on every
    valid calculation, so per-row listeners would be lost. */
 resultsEl.addEventListener('click', async (event) => {
@@ -459,6 +592,8 @@ resultsEl.addEventListener('click', async (event) => {
 });
 
 /* ── Init ───────────────────────────────────────────────────────────────── */
+
+buildReferenceTable();
 
 const saved = loadState();
 ipInput.value = typeof saved.ip === 'string' ? saved.ip : DEFAULTS.ip;

@@ -361,6 +361,229 @@ h2 {
   color: #3f4d61;
 }
 
+/* ── Reference panel ────────────────────────────────────────────────────── */
+.card--reference {
+  padding: 0;
+}
+
+.ref__heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.ref__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-3) var(--sp-5);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: color var(--t-fast);
+}
+
+.ref__toggle:hover {
+  color: var(--text);
+}
+
+.ref__toggle:focus-visible {
+  outline: none;
+  color: var(--text);
+  box-shadow: var(--ring);
+}
+
+.ref__chevron {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  color: var(--cyan);
+  transition: transform var(--t-med);
+}
+
+.ref__toggle[aria-expanded='true'] .ref__chevron {
+  transform: rotate(180deg);
+}
+
+.ref__family {
+  margin-left: auto;
+  padding: 2px var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: var(--cyan);
+  background: rgb(34 211 238 / 8%);
+  border: 1px solid rgb(34 211 238 / 20%);
+  border-radius: var(--r-sm);
+}
+
+/* anime.js animates this element's height; overflow keeps the reveal clean. */
+.ref__panel {
+  overflow: hidden;
+}
+
+.ref__body {
+  padding: 0 var(--sp-5) var(--sp-5);
+  border-top: 1px solid var(--border);
+  padding-top: var(--sp-4);
+}
+
+.ref__body[hidden] {
+  display: none;
+}
+
+.ref__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ref__table th,
+.ref__table td {
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+}
+
+.ref__table thead th {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  border-bottom: 1px solid var(--border);
+}
+
+.ref__table tbody th {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.ref__table tbody td {
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.ref__table tbody tr + tr th,
+.ref__table tbody tr + tr td {
+  border-top: 1px solid rgb(255 255 255 / 4%);
+}
+
+.ref__table tbody tr:hover th,
+.ref__table tbody tr:hover td {
+  background: rgb(255 255 255 / 3%);
+}
+
+.ref__list {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+}
+
+.ref__row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: var(--sp-3);
+  align-items: baseline;
+}
+
+.ref__row dt {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.ref__row dd {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.ref__note {
+  margin: var(--sp-4) 0 0;
+  padding-top: var(--sp-3);
+  font-size: 12px;
+  color: var(--text-mute);
+  border-top: 1px solid var(--border);
+}
+
+.ref__note code {
+  color: var(--green);
+}
+
+/* ── Label tooltips ─────────────────────────────────────────────────────── */
+/* .tip stays static so its tooltip resolves against .cell — that keeps the
+   bubble inside the cell's width and off the viewport edges. */
+.tip {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  margin-left: var(--sp-2);
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-mute);
+  vertical-align: middle;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  cursor: help;
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+
+.tip:hover,
+.tip:focus-visible {
+  outline: none;
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 5;
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  box-shadow: 0 14px 30px -14px rgb(0 0 0 / 92%);
+  opacity: 0;
+  transform: translateY(4px);
+  pointer-events: none;
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+
+.tip:hover::after,
+.tip:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ── Error banner ───────────────────────────────────────────────────────── */
 .banner {
   display: flex;
